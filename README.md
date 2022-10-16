@@ -30,8 +30,8 @@ Generated from [fspoettel/advent-of-code-rust](https://github.com/fspoettel/adve
 ### Setup new day
 
 ```sh
-# example: `./bin/scaffold 1`
-./bin/scaffold <day>
+# example: `./bin/scaffold.sh 1`
+./bin/scaffold.sh <day>
 
 # output:
 # Created module "src/bin/01.rs"
@@ -48,8 +48,8 @@ Every [solution](https://github.com/fspoettel/advent-of-code-rust/blob/master/bi
 ### Download inputs for a day
 
 ```sh
-# example: `./bin/download 1`
-./bin/download <day>
+# example: `./bin/download.sh 1`
+./bin/download.sh <day>
 
 # output:
 # Loaded session cookie from "/home/felix/.adventofcode.session".
