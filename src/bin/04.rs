@@ -1,61 +1,85 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap};
 use std::ptr::hash;
 use regex::Regex;
-
+fn rotate(input: &str, shift: u8) -> String {
+    String::from_utf8(
+        input.as_bytes().iter().map(|byte| {
+            ((byte - 97 + shift) % 26) + 97
+        }).collect::<Vec<u8>>()
+    ).unwrap_or("whoops, weird string data?".to_string())
+}
 pub fn part_one(input: &str) -> u32 {
     let lines = input.lines();
-    let order_regex = Regex::new(r"\[[a-z]+\]").unwrap();
-    let characters_regex = Regex::new(r"([a-z]+.)+(\d)").unwrap();
-    let sector_id_regex = Regex::new(r"[0-9]+").unwrap();
-    let mut ans = 0;
-    lines.for_each(|line|{
-        let order = order_regex.find(line).unwrap().as_str();
-        println!("{}", order);
-        let order2 = &order[1..order.len()-1];
-        println!("{}", order2);
+    let mut total: u64 = 0;
 
-        println!("{}", line);
-        let mut chars = characters_regex.find(line).unwrap().as_str().replace("-", "");
-        chars.remove(chars.len()-1);
-        println!("{}", chars);
+    for line in lines {
+        let mut count: BTreeMap<char, u32> = BTreeMap::new();
 
-        if is_real(order2.chars().collect(), chars.chars().collect()){
-           ans += sector_id_regex.find(line).unwrap().as_str().parse::<i32>().unwrap();
+        let mut parts: Vec<_> = line.split("-").collect();
+        let (rawid, chk) = parts.pop().unwrap().split_at(3);
+
+        for c in parts.concat().chars() {
+            *count.entry(c).or_insert(0) += 1;
         }
 
-    });
-    return ans as u32;
+        let mut v: Vec<(char, u32)> = count.into_iter().collect();
+        v.sort_by(|a, b| b.1.cmp(&a.1));
+
+        let s: String = v.into_iter().take(5).map(|(a, _)| a).collect();
+
+        if s == &chk[1..6] {
+            let room_number: u64 = rawid.parse().unwrap();
+            let shift = room_number % 26;
+
+            let desc = parts.iter().map(|word| rotate(word, shift as u8))
+                .collect::<Vec<_>>().join(" ");
+
+            if desc.contains("pole") {
+                println!("problem b:");
+                println!("valid room no. {} - {}", room_number, desc);
+            }
+            total += room_number;
+        }
+    }
+    return total as u32;
 }
 
 pub fn part_two(input: &str) -> u32 {
-    0
+    let lines = input.lines();
+    let mut total: u64 = 0;
+
+    for line in lines {
+        let mut count: BTreeMap<char, u32> = BTreeMap::new();
+
+        let mut parts: Vec<_> = line.split("-").collect();
+        let (rawid, chk) = parts.pop().unwrap().split_at(3);
+
+        for c in parts.concat().chars() {
+            *count.entry(c).or_insert(0) += 1;
+        }
+
+        let mut v: Vec<(char, u32)> = count.into_iter().collect();
+        v.sort_by(|a, b| b.1.cmp(&a.1));
+
+        let s: String = v.into_iter().take(5).map(|(a, _)| a).collect();
+
+        if s == &chk[1..6] {
+            let room_number: u64 = rawid.parse().unwrap();
+            let shift = room_number % 26;
+
+            let desc = parts.iter().map(|word| rotate(word, shift as u8))
+                .collect::<Vec<_>>().join(" ");
+
+            if desc.contains("pole") {
+                println!("valid room no. {} - {}", room_number, desc);
+                return room_number as u32;
+            }
+            total += room_number;
+        }
+    }
+    unreachable!()
 }
 
-fn is_real(order:Vec<char>, chars: Vec<char>) -> bool{
-    let mut freq:HashMap<char, u32>= HashMap::new();
-    chars.into_iter().for_each(|c|{
-        if freq.contains_key(&c){
-            freq.insert(c, freq.get(&c).unwrap().clone()+1);
-        }else {
-            freq.insert(c, 1);
-        }
-    });
-    println!("{:?}", freq);
-    let mut last:u32 = u32::MAX;
-    for c in order.into_iter(){
-        println!("{}", last);
-        println!("{}", c);
-        if let Some(val) = freq.get(&c){
-          if last < *val {
-              return false
-          }
-            last = freq.get(&c).unwrap().clone();
-        }else{
-            return false;
-        }
-    };
-    return true;
-}
 fn main() {
     aoc::solve!(&aoc::read_file("inputs", 4), part_one, part_two)
 }
