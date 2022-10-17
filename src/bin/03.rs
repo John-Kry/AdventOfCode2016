@@ -4,10 +4,10 @@ pub fn part_one(input: &str) -> u32 {
     let regex = Regex::new(r"(\d+)").unwrap();
     let mut valid = 0;
     lines.for_each(|line| {
-        let matches:Vec<u32> = regex.find_iter(line)
-            .filter_map(|digits|{
-                digits.as_str().parse().ok()
-            }).collect();
+        let matches: Vec<u32> = regex
+            .find_iter(line)
+            .filter_map(|digits| digits.as_str().parse().ok())
+            .collect();
         println!("line: {}", line);
         let triangle = Triangle {
             x: matches[0],
@@ -17,10 +17,10 @@ pub fn part_one(input: &str) -> u32 {
 
         println!("{:?}", triangle);
         if triangle.is_valid_triangle() {
-            valid+=1;
+            valid += 1;
         }
     });
-    return valid
+    return valid;
 }
 
 pub fn part_two(input: &str) -> u32 {
@@ -28,30 +28,30 @@ pub fn part_two(input: &str) -> u32 {
 
     let regex = Regex::new(r"(\d+)").unwrap();
     let mut valid = 0;
-    let mut i =0;
-    let mut tri1:Vec<u32> = vec![];
-    let  mut tri2:Vec<u32> = vec![];
-    let mut tri3:Vec<u32> = vec![];
-    lines.for_each(|line|{
-        let matches:Vec<u32> = regex.find_iter(line)
-            .filter_map(|digits|{
-                digits.as_str().parse().ok()
-            }).collect();
-        i+=1;
+    let mut i = 0;
+    let mut tri1: Vec<u32> = vec![];
+    let mut tri2: Vec<u32> = vec![];
+    let mut tri3: Vec<u32> = vec![];
+    lines.for_each(|line| {
+        let matches: Vec<u32> = regex
+            .find_iter(line)
+            .filter_map(|digits| digits.as_str().parse().ok())
+            .collect();
+        i += 1;
         tri1.push(matches[0]);
         tri2.push(matches[1]);
         tri3.push(matches[2]);
-        if i ==3 {
-            i =0;
+        if i == 3 {
+            i = 0;
 
-            let mut triangles:Vec<Triangle> = vec![];
+            let mut triangles: Vec<Triangle> = vec![];
             triangles.push(Triangle::create_triangle(&tri1));
             triangles.push(Triangle::create_triangle(&tri2));
             triangles.push(Triangle::create_triangle(&tri3));
 
-            triangles.into_iter().for_each(|t|{
+            triangles.into_iter().for_each(|t| {
                 if t.is_valid_triangle() {
-                    valid+=1
+                    valid += 1
                 }
             });
             // 1855
@@ -70,15 +70,15 @@ fn main() {
 }
 
 #[derive(Debug)]
-struct Triangle{
-    x:u32,
-    y:u32,
-    z:u32,
+struct Triangle {
+    x: u32,
+    y: u32,
+    z: u32,
 }
 
-impl Triangle{
-    fn is_valid_triangle(&self) -> bool{
-        let mut sides = vec![self.x,self.y,self.z];
+impl Triangle {
+    fn is_valid_triangle(&self) -> bool {
+        let mut sides = vec![self.x, self.y, self.z];
 
         sides.sort();
 
@@ -88,7 +88,7 @@ impl Triangle{
         Triangle {
             x: input[0],
             y: input[1],
-            z: input[2]
+            z: input[2],
         }
     }
 }
@@ -111,12 +111,8 @@ mod tests {
     }
 
     #[test]
-    fn is_triangle_valid(){
-        let triangle = Triangle{
-            x: 10,
-            y: 5,
-            z: 25
-        };
+    fn is_triangle_valid() {
+        let triangle = Triangle { x: 10, y: 5, z: 25 };
         assert_eq!(false, triangle.is_valid_triangle());
     }
 }

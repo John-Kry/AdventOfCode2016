@@ -1,54 +1,94 @@
-use std::collections::HashMap;
-use std::ptr::hash;
 use regex::Regex;
-
+use std::collections::BTreeMap;
+use std::ptr::hash;
+fn rotate(input: &str, shift: u8) -> String {
+    String::from_utf8(
+        input
+            .as_bytes()
+            .iter()
+            .map(|byte| ((byte - 97 + shift) % 26) + 97)
+            .collect::<Vec<u8>>(),
+    )
+    .unwrap_or("whoops, weird string data?".to_string())
+}
 pub fn part_one(input: &str) -> u32 {
     let lines = input.lines();
-    let order_regex = Regex::new(r"\[[a-z]+\]").unwrap();
-    let characters_regex = Regex::new(r"([a-z]+.)*-").unwrap();
-    let sector_id_regex = Regex::new(r"[0-9]+").unwrap();
-    let mut ans = 0;
-    lines.for_each(|line|{
-        let order = order_regex.find(line).unwrap().as_str();
-        println!("{}", order);
-        let order2 = &order[1..order.len()-1];
-        println!("{}", order2);
+    let mut total: u64 = 0;
 
-        println!("{}", line);
-        let chars = characters_regex.find(line).unwrap().as_str().replace("-", "");
-        println!("{}", chars);
+    for line in lines {
+        let mut count: BTreeMap<char, u32> = BTreeMap::new();
 
-        if is_real(order2.chars().collect(), chars.chars().collect()){
-           ans += sector_id_regex.find(line).unwrap().as_str().parse::<i32>().unwrap();
+        let mut parts: Vec<_> = line.split("-").collect();
+        let (rawid, chk) = parts.pop().unwrap().split_at(3);
+
+        for c in parts.concat().chars() {
+            *count.entry(c).or_insert(0) += 1;
         }
 
-    });
-        0
+        let mut v: Vec<(char, u32)> = count.into_iter().collect();
+        v.sort_by(|a, b| b.1.cmp(&a.1));
+
+        let s: String = v.into_iter().take(5).map(|(a, _)| a).collect();
+
+        if s == &chk[1..6] {
+            let room_number: u64 = rawid.parse().unwrap();
+            let shift = room_number % 26;
+
+            let desc = parts
+                .iter()
+                .map(|word| rotate(word, shift as u8))
+                .collect::<Vec<_>>()
+                .join(" ");
+
+            if desc.contains("pole") {
+                println!("problem b:");
+                println!("valid room no. {} - {}", room_number, desc);
+            }
+            total += room_number;
+        }
+    }
+    return total as u32;
 }
 
 pub fn part_two(input: &str) -> u32 {
-    0
+    let lines = input.lines();
+    let mut total: u64 = 0;
+
+    for line in lines {
+        let mut count: BTreeMap<char, u32> = BTreeMap::new();
+
+        let mut parts: Vec<_> = line.split("-").collect();
+        let (rawid, chk) = parts.pop().unwrap().split_at(3);
+
+        for c in parts.concat().chars() {
+            *count.entry(c).or_insert(0) += 1;
+        }
+
+        let mut v: Vec<(char, u32)> = count.into_iter().collect();
+        v.sort_by(|a, b| b.1.cmp(&a.1));
+
+        let s: String = v.into_iter().take(5).map(|(a, _)| a).collect();
+
+        if s == &chk[1..6] {
+            let room_number: u64 = rawid.parse().unwrap();
+            let shift = room_number % 26;
+
+            let desc = parts
+                .iter()
+                .map(|word| rotate(word, shift as u8))
+                .collect::<Vec<_>>()
+                .join(" ");
+
+            if desc.contains("pole") {
+                println!("valid room no. {} - {}", room_number, desc);
+                return room_number as u32;
+            }
+            total += room_number;
+        }
+    }
+    unreachable!()
 }
 
-fn is_real(order:Vec<char>, chars: Vec<char>) -> bool{
-    let mut freq:HashMap<char, u32>= HashMap::new();
-    chars.into_iter().for_each(|c|{
-        if freq.contains_key(&c){
-            freq.insert(c, freq.get(&c).unwrap().clone()+1);
-        }else {
-            freq.insert(c, 1);
-        }
-    });
-    let mut last:u32 = 0;
-    for c in order.into_iter(){
-        // if(freq
-        if last > freq.get(&c).unwrap().clone(){
-            return false;
-        }
-        last = freq.get(&c).clone().unwrap().clone();
-    };
-    return true;
-}
 fn main() {
     aoc::solve!(&aoc::read_file("inputs", 4), part_one, part_two)
 }
@@ -61,7 +101,7 @@ mod tests {
     fn test_part_one() {
         use aoc::read_file;
         let input = read_file("examples", 4);
-        assert_eq!(part_one(&input), 0);
+        assert_eq!(part_one(&input), 1514);
     }
 
     #[test]
@@ -69,5 +109,15 @@ mod tests {
         use aoc::read_file;
         let input = read_file("examples", 4);
         assert_eq!(part_two(&input), 0);
+    }
+
+    #[test]
+    fn part_one_single() {
+        assert_eq!(part_one("not-a-real-room-404[oarel]"), 404);
+    }
+
+    #[test]
+    fn test_input() {
+        assert_eq!(part_one("aa-bbb-c-dddd-e-123[abcde]"), 0);
     }
 }
