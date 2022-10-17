@@ -1,12 +1,15 @@
-use std::collections::{BTreeMap};
-use std::ptr::hash;
 use regex::Regex;
+use std::collections::BTreeMap;
+use std::ptr::hash;
 fn rotate(input: &str, shift: u8) -> String {
     String::from_utf8(
-        input.as_bytes().iter().map(|byte| {
-            ((byte - 97 + shift) % 26) + 97
-        }).collect::<Vec<u8>>()
-    ).unwrap_or("whoops, weird string data?".to_string())
+        input
+            .as_bytes()
+            .iter()
+            .map(|byte| ((byte - 97 + shift) % 26) + 97)
+            .collect::<Vec<u8>>(),
+    )
+    .unwrap_or("whoops, weird string data?".to_string())
 }
 pub fn part_one(input: &str) -> u32 {
     let lines = input.lines();
@@ -31,8 +34,11 @@ pub fn part_one(input: &str) -> u32 {
             let room_number: u64 = rawid.parse().unwrap();
             let shift = room_number % 26;
 
-            let desc = parts.iter().map(|word| rotate(word, shift as u8))
-                .collect::<Vec<_>>().join(" ");
+            let desc = parts
+                .iter()
+                .map(|word| rotate(word, shift as u8))
+                .collect::<Vec<_>>()
+                .join(" ");
 
             if desc.contains("pole") {
                 println!("problem b:");
@@ -67,8 +73,11 @@ pub fn part_two(input: &str) -> u32 {
             let room_number: u64 = rawid.parse().unwrap();
             let shift = room_number % 26;
 
-            let desc = parts.iter().map(|word| rotate(word, shift as u8))
-                .collect::<Vec<_>>().join(" ");
+            let desc = parts
+                .iter()
+                .map(|word| rotate(word, shift as u8))
+                .collect::<Vec<_>>()
+                .join(" ");
 
             if desc.contains("pole") {
                 println!("valid room no. {} - {}", room_number, desc);
@@ -103,12 +112,12 @@ mod tests {
     }
 
     #[test]
-    fn part_one_single(){
+    fn part_one_single() {
         assert_eq!(part_one("not-a-real-room-404[oarel]"), 404);
     }
 
     #[test]
-    fn test_input(){
+    fn test_input() {
         assert_eq!(part_one("aa-bbb-c-dddd-e-123[abcde]"), 0);
     }
 }

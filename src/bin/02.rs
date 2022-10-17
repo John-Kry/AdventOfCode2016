@@ -77,7 +77,7 @@ pub fn part_two(input: &str) -> u32 {
             }
             let temp = Position { x: x, y: y };
 
-            if  temp.get_value_part_2().is_some(){
+            if temp.get_value_part_2().is_some() {
                 position.x = x;
                 position.y = y;
             }
@@ -90,7 +90,7 @@ pub fn part_two(input: &str) -> u32 {
     println!("{}", code[0]);
     let output: String = code.into_iter().collect();
     println!("{}", output);
-    return 0
+    return 0;
 }
 
 fn main() {
@@ -170,11 +170,11 @@ impl Position {
                 2 => Some('8'),
                 3 => Some('C'),
                 _ => None,
-            }
+            },
             4 => match self.y {
                 2 => Some('9'),
-                _ => None
-            }
+                _ => None,
+            },
             _ => None,
         };
     }
