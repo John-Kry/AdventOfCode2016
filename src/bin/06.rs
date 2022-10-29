@@ -5,12 +5,12 @@ pub fn part_one(input: &str) -> u32 {
     let lines = input.lines();
     let mut seen: Vec<HashMap<char, u32>> = Vec::new();
     seen.resize(lines.clone().nth(0).unwrap().len(), Default::default());
-    seen.fill(HashMap::new(), );
+    seen.fill(HashMap::new());
 
     lines.for_each(|line| {
         line.chars().into_iter().enumerate().for_each(|(index, c)| {
             if seen[index].contains_key(&c) {
-                let curr_val = seen[index].get(&c).unwrap() +1;
+                let curr_val = seen[index].get(&c).unwrap() + 1;
                 seen[index].insert(c, curr_val);
             } else {
                 seen[index].insert(c, 1);
@@ -30,7 +30,7 @@ pub fn part_one(input: &str) -> u32 {
         letters.push(best_key);
     });
 
-    let ans:String = letters.into_iter().collect();
+    let ans: String = letters.into_iter().collect();
     println!("pog{}", ans);
 
     0
@@ -40,12 +40,12 @@ pub fn part_two(input: &str) -> u32 {
     let lines = input.lines();
     let mut seen: Vec<HashMap<char, u32>> = Vec::new();
     seen.resize(lines.clone().nth(0).unwrap().len(), Default::default());
-    seen.fill(HashMap::new(), );
+    seen.fill(HashMap::new());
 
     lines.for_each(|line| {
         line.chars().into_iter().enumerate().for_each(|(index, c)| {
             if seen[index].contains_key(&c) {
-                let curr_val = seen[index].get(&c).unwrap() +1;
+                let curr_val = seen[index].get(&c).unwrap() + 1;
                 seen[index].insert(c, curr_val);
             } else {
                 seen[index].insert(c, 1);
@@ -65,7 +65,7 @@ pub fn part_two(input: &str) -> u32 {
         letters.push(best_key);
     });
 
-    let ans:String = letters.into_iter().collect();
+    let ans: String = letters.into_iter().collect();
     println!("pog{}", ans);
     0
 }
