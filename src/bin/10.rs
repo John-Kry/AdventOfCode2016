@@ -61,24 +61,28 @@ pub fn part_one(input: &str) -> u32 {
             r.size() == 2
         }).unwrap();
         let local_container = actions.get(&(position as u32)).unwrap();
+        let values= bots.clone()[local_container.source_bot_id as usize].values;
 
+        process_action(&local_container.low, &mut bots[local_container.low.target as usize], values[0], &mut output);
+        process_action(&local_container.high, &mut bots[local_container.high.target as usize], values[1], &mut output);
 
-        process_action(&local_container.low, &mut bots, bot.values[0], &mut output);
-        process_action(&local_container.high, &mut bots, bot.values[1], &mut output);
-        bots.get_mut(bot_id).unwrap().clear();
+        bots.get_mut(position).unwrap().clear();
 
     }
     println!("output:{:?}",output);
     0
 }
 
-fn process_action(local: &Local, bots: &mut [Bot; 250], value: Option<u32>, outputs: &mut Vec<u32> ){
+fn process_action(local: &Local, target_bot: &mut Bot, value: Option<u32>, outputs: &mut Vec<u32> ){
+    if target_bot.is_special(){
+        println!("ASDSADa");
+    }
     match  { &local.bucket} {
         Bucket::Output => {
             outputs.push(value.unwrap());
         }
         Bucket::Bot => {
-            let (is_full, is_magical) = bots[local.target as usize].init_value(value.unwrap());
+            let (is_full, is_magical) = target_bot.init_value(value.unwrap());
             if is_magical {
                 println!("magic bot{}", local.target);
             }
@@ -124,8 +128,8 @@ impl Bot {
         }
         if self.size() == 2 {
             self.values.sort();
-            if self.values[0].unwrap() == 17 {
-                println!("{:?}",self.values );
+
+            if self.values.contains(&Option::from(61 as u32)){
                 return (true, true);
             }
             return (true, false);
@@ -136,6 +140,12 @@ impl Bot {
     fn clear(&mut self){
         self.values[0] = None;
         self.values[1] = None;
+    }
+
+    fn is_special(&self) ->bool{
+        if self.size() != 2 {return false}
+
+        return self.values[0].unwrap() == 17 && self.values[1].unwrap() == 61;
     }
 
     fn size(&self) -> u8 {
