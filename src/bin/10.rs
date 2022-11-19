@@ -3,7 +3,7 @@ use std::collections::HashMap;
 pub fn part_one(input: &str) -> u32 {
     let lines = input.lines().into_iter();
     let mut bots: [Bot; 250] = [Bot::default(); 250];
-    let mut output:Vec<u32> = Vec::with_capacity(1000);
+    let mut output: [i32; 200] = [0; 200];
     let init_lines: Vec<&str> = lines
         .clone()
         .filter(|line| line.contains("goes to"))
@@ -38,7 +38,7 @@ pub fn part_one(input: &str) -> u32 {
                 target: splitted[11].parse::<u32>().unwrap(),
             };
 
-            actions.insert(source_bot_id,LocalContainer{ high: local1, low: local2, source_bot_id });
+            actions.insert(source_bot_id,LocalContainer{ high: local2, low: local1, source_bot_id });
         });
 
     init_lines.iter().for_each(|line| {
@@ -56,7 +56,7 @@ pub fn part_one(input: &str) -> u32 {
         }
     });
 
-    while bots.iter().any(|bot|{bot.size() >1}){
+    while bots.iter().any(|bot|{bot.size() >0}){
         let position = bots.iter().position(|&r|{
             r.size() == 2
         }).unwrap();
@@ -70,16 +70,13 @@ pub fn part_one(input: &str) -> u32 {
 
     }
     println!("output:{:?}",output);
-    0
+    return (output[0] * output[1] * output[2]) as u32;
 }
 
-fn process_action(local: &Local, target_bot: &mut Bot, value: Option<u32>, outputs: &mut Vec<u32> ){
-    if target_bot.is_special(){
-        println!("ASDSADa");
-    }
+fn process_action(local: &Local, target_bot: &mut Bot, value: Option<u32>, outputs: &mut [i32; 200]){
     match  { &local.bucket} {
         Bucket::Output => {
-            outputs.push(value.unwrap());
+            outputs[local.target as usize] = value.unwrap() as i32;
         }
         Bucket::Bot => {
             let (is_full, is_magical) = target_bot.init_value(value.unwrap());
@@ -121,15 +118,16 @@ struct Bot {
 impl Bot {
     fn init_value(&mut self, val: u32) ->(bool, bool) {
 
-        if self.size() == 1 {
+        if self.values[0].is_some(){
             self.values[1] = Option::from(val);
-        } else {
+        }else{
             self.values[0] = Option::from(val);
         }
+
         if self.size() == 2 {
             self.values.sort();
 
-            if self.values.contains(&Option::from(61 as u32)){
+            if self.is_special(){
                 return (true, true);
             }
             return (true, false);
